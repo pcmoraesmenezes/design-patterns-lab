@@ -199,3 +199,74 @@ When you have many objects of a common type (for example `Shape`):
   (like for example `IShape`) but internally creates the specific object type (like for example `Circle`, `Square`, etc.) based on the input parameters.
 
 - Let the Factory know wwhich instance you want, through some sort of a constant id for the specific object type. This can be accomplish through an enum or a list of constant which could be integers or strings.
+
+## Main Types of Factory Method
+
+### GoF Factory Method
+
+We start with an interfcace that stands for some sort of instance of a class that we want to instance and it has a operation. Then we have $n$ concrete classes that implement the interface. 
+
+Note that all of the concrete classes have the same method signature. This is important because we want to be able to call the same method on all of them.
+
+What we do now is create a contract to the factory that implies a creation of the object.
+
+For example we create a concrete class of the factory that specific creates the object we want to create. This is important because we want to be able to call the same method on all of them.
+
+For every concrete interface implementation we have a concrete factory implementation.
+
+```python
+
+from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
+
+# Abstract Product: Defines the interface for objects created by factory
+class Shape(ABC):
+    @abstractmethod
+    def draw(self) -> None:
+        """Draw the shape - operations that all products must implement"""
+        pass
+
+# Concrete Products: Implement the Product interface
+class Triangle(Shape):
+    def draw(self) -> None:
+        print("Drawing a triangle")
+
+class Rectangle(Shape):
+    def draw(self) -> None:
+        print("Drawing a rectangle")
+
+# Abstract Creator: Declares the factory method
+class ShapeFactory(ABC):
+    @abstractmethod
+    def create_shape(self) -> Shape:
+        """Factory Method: Creates and returns a Product object"""
+        pass
+    
+    def operation(self) -> None:
+        """Creator may also provide a default implementation that uses the product"""
+        product = self.create_shape()
+        product.draw()
+
+# Concrete Creators: Override the factory method to create specific products
+class TriangleFactory(ShapeFactory):
+    def create_shape(self) -> Shape:
+        return Triangle()
+
+class RectangleFactory(ShapeFactory):
+    def create_shape(self) -> Shape:
+        return Rectangle()
+
+# Client code
+def client_code(factory: ShapeFactory) -> None:
+    """Uses factories without depending on concrete product classes"""
+    factory.operation()
+
+# Example usage
+if __name__ == "__main__":
+    print("Client: Using the TriangleFactory")
+    client_code(TriangleFactory())
+    
+    print("\nClient: Using the RectangleFactory")
+    client_code(RectangleFactory())
+
+```
